@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 @RequiredArgsConstructor
-@PreAuthorize("hasPermission('GERER_HABILITATIONS')")
+@PreAuthorize("@securityEvaluator.hasPermission('GERER_HABILITATIONS')")
 public class AdminAcessService {
     private final ProfilRepository profilRepository;
     private final UtilisateurRepository utilisateurRepository;

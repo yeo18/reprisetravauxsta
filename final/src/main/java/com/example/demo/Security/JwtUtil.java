@@ -3,6 +3,8 @@ package com.example.demo.Security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -11,10 +13,15 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private static final String SECRET =
-            "danieldanieldaniel0163867567899HARISUTULLAZJHJZKKJKD";
+    @Value("${jwt.secret}")
+    private String secret;
 
-    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    private Key key;
+
+    @PostConstruct
+    public void init() {
+        key = Keys.hmacShaKeyFor(secret.getBytes());
+    }
 
     /**
      * Générer un JWT contenant l'email de l'utilisateur
@@ -25,7 +32,7 @@ public class JwtUtil {
                 .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(
-                        new Date(System.currentTimeMillis() +  86400000)
+                        new Date(System.currentTimeMillis() + 86400000)
                 )
                 .signWith(key)
                 .compact();
@@ -45,7 +52,6 @@ public class JwtUtil {
 
         try {
             Claims claims = getClaims(token);
-
             return !claims.getExpiration().before(new Date());
 
         } catch (Exception e) {
