@@ -1,33 +1,60 @@
-HELP.md
+# =========================
+# SPRING BOOT / MAVEN
+# =========================
 target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+*.jar
+*.war
+*.log
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-### VS Code ###
+# =========================
+# IDE (IntelliJ / VS Code / Eclipse)
+# =========================
+.idea/
 .vscode/
+*.iml
+.classpath
+.project
+.settings/
+
+# =========================
+# ENV / SECRETS
+# =========================
+.env
+*.env
+
+# Fichiers de config sensibles (optionnel)
+application-prod.properties
+application-secret.properties
+
+# =========================
+# DATABASE BACKUPS (TRÈS IMPORTANT)
+# =========================
+*.sql
+dump.sql
+backup.sql
+*.dump
+
+# =========================
+# SYSTEM FILES
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# NODE (si frontend React/Next)
+# =========================
+node_modules/
+dist/
+build/
+
+# =========================
+# SPRING CACHE / TEMP
+# =========================
+*.pid
+*.tmp
+
+# =========================
+# LOG FOLDERS
+# =========================
+logs/
+log/
