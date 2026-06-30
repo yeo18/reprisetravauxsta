@@ -39,7 +39,11 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers( "/",
+                                "/test",
+                                "/error",
+                                "/favicon.ico",
+                                "/api/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
 
