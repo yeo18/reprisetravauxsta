@@ -10,10 +10,12 @@ import com.example.demo.Entity.Profil;
 import com.example.demo.Entity.Utilisateur;
 import com.example.demo.Repository.ProfilRepository;
 import com.example.demo.Repository.UtilisateurRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -96,5 +98,36 @@ public class UtilisateurService {
 
         return dto;
     }
+    @Transactional
+    public Utilisateur modifierUtilisateur(Long id, String nom, String prenom, String email, String telephone, Long profilId) {
+        Utilisateur user = trouverParId(id);
+        if (nom != null) user.setNom(nom);
+        if (prenom != null) user.setPrenom(prenom);
+        if (email != null) {
+            if (utilisateurRepository.findByEmail(email).isPresent() && !user.getEmail().equals(email)) {
+                throw new RuntimeException("Cet email est déjà utilisé");
+            }
+            user.setEmail(email);
+        }
+        if (telephone != null) user.setTelephone(telephone);
+        if (profilId != null) {
+            Profil profil = profilRepository.findById(profilId)
+                    .orElseThrow(() -> new RuntimeException("Profil non trouvé"));
+            user.setProfil(profil);
+        }
+        user.setDateModification(LocalDateTime.now());
+        return utilisateurRepository.save(user);
+    }
 
+    @Transactional
+    public void supprimerUtilisateur(Long id) {
+        utilisateurRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void resetPassword(Long id, String nouveauMotDePasse) {
+        Utilisateur user = trouverParId(id);
+        user.setPassword(passwordEncoder.encode(nouveauMotDePasse));
+        utilisateurRepository.save(user);
+    }
 }
