@@ -4,6 +4,7 @@ import com.example.demo.Entity.Permission;
 import com.example.demo.Entity.Profil;
 import com.example.demo.Entity.Utilisateur;
 import com.example.demo.Service.AdminAcessService;
+import com.example.demo.Service.PermissionService;
 import com.example.demo.Service.ProfilService;
 import com.example.demo.Service.UtilisateurService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,8 @@ public class AdminController {
     private final AdminAcessService adminAcessService;
     private final UtilisateurService utilisateurService;
     private final ProfilService profilService;
+    private final PermissionService permissionService;   // à ajouter
+
 
     // ========== GESTION DES PROFILS ==========
 
@@ -76,18 +79,20 @@ public class AdminController {
 
     // ========== GESTION DES PERMISSIONS (globales) ==========
 
+    // ========== GESTION DES PERMISSIONS (globales) ==========
+
     // Lister toutes les permissions
     @GetMapping("/permissions")
     @PreAuthorize("@securityEvaluator.hasPermission('GERER_HABILITATIONS')")
     public ResponseEntity<List<Permission>> listerPermissions() {
-        return ResponseEntity.ok(profilService.listerToutesLesPermissions());
+        return ResponseEntity.ok(permissionService.listerToutes());  // ← ici
     }
 
     // Modifier une permission (nom)
     @PutMapping("/permission/{permissionId}")
     @PreAuthorize("@securityEvaluator.hasPermission('GERER_HABILITATIONS')")
     public ResponseEntity<Permission> modifierPermission(@PathVariable Long permissionId, @RequestParam String nouveaunom) {
-        Permission permission = profilService.modifierPermission(permissionId, nouveaunom);
+        Permission permission = permissionService.modifierPermission(permissionId, nouveaunom);  // ← ici
         return ResponseEntity.ok(permission);
     }
 
