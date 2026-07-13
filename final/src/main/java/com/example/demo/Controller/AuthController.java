@@ -48,6 +48,7 @@ public class AuthController {
 
 
     @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserMeDto> getCurrentUser(Authentication authentication) {
         String email = authentication.getName();
         UserMeDto dto = utilisateurService.getCurrentUserDto(email);
