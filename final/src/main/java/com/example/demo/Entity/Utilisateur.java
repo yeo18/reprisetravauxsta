@@ -34,6 +34,7 @@ public class Utilisateur {
     @Column(nullable = false)
     private String password;
     @Column(nullable = false)
+    private  String telephone;
     private LocalDateTime  datecreation;
     @Column(nullable = false)
     private LocalDateTime dateModification;
@@ -67,4 +68,6 @@ public class Utilisateur {
     protected void onUpdate() {
         this.dateModification = LocalDateTime.now();
     }
+
+
 }

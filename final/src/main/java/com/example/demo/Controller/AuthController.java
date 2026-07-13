@@ -2,6 +2,7 @@ package com.example.demo.Controller;
 import com.example.demo.Dto.ReponseAuthentification;
 import com.example.demo.Dto.Connexion;
 import com.example.demo.Dto.Inscription;
+import com.example.demo.Dto.UserMeDto;
 import com.example.demo.Security.JwtUtil;
 import com.example.demo.Service.AuthService;
 import com.example.demo.Service.UtilisateurService;
@@ -9,11 +10,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -45,4 +45,14 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email ou mot de passe incorrect");
         }
     }
+
+
+    @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<UserMeDto> getCurrentUser(Authentication authentication) {
+        String email = authentication.getName();
+        UserMeDto dto = utilisateurService.getCurrentUserDto(email);
+        return ResponseEntity.ok(dto);
+    }
+
 }
