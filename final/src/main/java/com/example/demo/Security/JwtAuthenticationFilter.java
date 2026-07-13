@@ -30,19 +30,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
-        // === AJOUT : Ignorer les requêtes OPTIONS (préflight) ===
+        // === 1. Ignorer les requêtes OPTIONS (préflight) ===
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             chain.doFilter(request, response);
             return;
         }
-        // ========================================================
 
+        // === 2. Ignorer les endpoints publics ===
         String path = request.getRequestURI();
         if (path.startsWith("/api/auth/login") || path.startsWith("/api/auth/register")) {
             chain.doFilter(request, response);
             return;
         }
 
-        // ... reste du code
+        // ... le reste du code (extraction du token, etc.)
     }
 }
