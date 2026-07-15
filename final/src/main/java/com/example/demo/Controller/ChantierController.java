@@ -67,4 +67,9 @@ public class ChantierController {
     public ResponseEntity<List<Tache>> TachesUrgentesParChantier(@PathVariable Long id) {
         return ResponseEntity.ok(chantierService.TachesUrgentesParChantier(id));
     }
+
+    @GetMapping("/mon-chantier")
+    public ResponseEntity<Chantier> monChantier() {
+        return ResponseEntity.ok(chantierService.monChantier());
+    }
 }

@@ -103,4 +103,15 @@ public class ChantierService {
         return chantierRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Chantier introuvable avec l'ID : " + id));
     }
+
+    // 10. MON CHANTIER (pour le profil USER)
+    public Chantier monChantier() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Utilisateur user = utilisateurRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+        if (user.getEquipe() == null || user.getEquipe().getChantier() == null) {
+            throw new RuntimeException("Vous n'êtes assigné à aucun chantier");
+        }
+        return user.getEquipe().getChantier();
+    }
 }

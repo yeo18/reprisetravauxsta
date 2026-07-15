@@ -10,6 +10,7 @@ import com.example.demo.Repository.UtilisateurRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -107,5 +108,16 @@ public class EquipeService {
     public int calculerNombreMembres(Long equipeId) {
         Equipe equipe = EquipeUnique(equipeId);
         return equipe.getMembres().size();
+    }
+
+    // 9. MON EQUIPE (pour le profil USER)
+    public Equipe monEquipe() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Utilisateur user = utilisateurRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+        if (user.getEquipe() == null) {
+            throw new RuntimeException("Vous n'êtes assigné à aucune équipe");
+        }
+        return user.getEquipe();
     }
 }

@@ -73,4 +73,9 @@ public class EquipeController {
         int nb = equipeService.calculerNombreMembres(id);
         return ResponseEntity.ok(nb);
     }
+
+    @GetMapping("/mon-equipe")
+    public ResponseEntity<Equipe> monEquipe() {
+        return ResponseEntity.ok(equipeService.monEquipe());
+    }
 }
