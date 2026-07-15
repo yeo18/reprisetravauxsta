@@ -44,7 +44,7 @@ public class Utilisateur {
         joinColumns=@JoinColumn(name="utilisateur_id"),
         inverseJoinColumns=@JoinColumn(name="permission_id")
     )
-    private Set<Permission> permissionsSpecifique= new HashSet<>();
+    private Set<Permission> permissionsSpecifiques= new HashSet<>();
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "profil_id", nullable = false)
     private Profil profil;
