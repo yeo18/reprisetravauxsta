@@ -171,4 +171,13 @@ public class TacheService {
         tache.setAssigneA(user);
         tacheRepository.save(tache);
     }
+
+    // 9. TERMINER UNE TACHE (validation)
+    @PreAuthorize("@securityEvaluator.hasPermission('TACHE_VALIDER')")
+    @Transactional
+    public void terminerTache(Long id) {
+        Tache tache = TacheParId(id);
+        tache.setStatus(com.example.demo.Entity.Mestypes.StatusTache.TERMINE);
+        tacheRepository.save(tache);
+    }
 }

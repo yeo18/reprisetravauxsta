@@ -77,4 +77,11 @@ public class TacheController {
     public ResponseEntity<List<Tache>> mesTaches() {
         return ResponseEntity.ok(tacheService.mesTaches());
     }
+
+    @PutMapping("/{id}/terminer")
+    @PreAuthorize("@securityEvaluator.hasPermission('TACHE_VALIDER')")
+    public ResponseEntity<?> terminerTache(@PathVariable Long id) {
+        tacheService.terminerTache(id);
+        return ResponseEntity.ok(Map.of("message", "Tâche validée avec succès"));
+    }
 }

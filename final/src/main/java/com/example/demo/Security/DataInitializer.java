@@ -39,7 +39,7 @@ public class DataInitializer implements CommandLineRunner {
         // ==========================================
         List<String> nomsPermissions = Arrays.asList(
                 "CHANTIER_CREER", "CHANTIER_MODIFIER", "CHANTIER_SUPPRIMER", "CHANTIER_VOIR", "CHANTIER_VOIR_STATS",
-                "TACHE_CREER", "TACHE_MODIFIER", "TACHE_SUPPRIMER", "TACHE_VOIR",
+                "TACHE_CREER", "TACHE_MODIFIER", "TACHE_SUPPRIMER", "TACHE_VOIR", "TACHE_VALIDER",
                 "TACHE_ASSIGNER_EQUIPE", "TACHE_ASSIGNER_UTILISATEUR",
                 "EQUIPE_CREER", "EQUIPE_MODIFIER", "EQUIPE_SUPPRIMER", "EQUIPE_VOIR", "EQUIPE_GERER_MEMBRES",
                 "UTILISATEUR_VOIR", "UTILISATEUR_CREER", "UTILISATEUR_MODIFIER", "UTILISATEUR_SUPPRIMER",
@@ -83,14 +83,16 @@ public class DataInitializer implements CommandLineRunner {
         profilRepository.save(adminProfil);
 
         // ==========================================
-        // 4. ATTRIBUTION DE TACHE_VOIR AU PROFIL USER
+        // 4. ATTRIBUTION DES PERMISSIONS AU PROFIL USER
         // ==========================================
-        permissionRepository.findByNom("TACHE_VOIR").ifPresent(perm -> {
-            if (!userProfil.getPermissions().contains(perm)) {
-                userProfil.getPermissions().add(perm);
-                profilRepository.save(userProfil);
-            }
+        List.of("CHANTIER_VOIR", "TACHE_VOIR", "TACHE_VALIDER", "EQUIPE_VOIR").forEach(nom -> {
+            permissionRepository.findByNom(nom).ifPresent(perm -> {
+                if (!userProfil.getPermissions().contains(perm)) {
+                    userProfil.getPermissions().add(perm);
+                }
+            });
         });
+        profilRepository.save(userProfil);
 
         // ==========================================
         // 5. CRÉATION DE L'ADMIN PAR DÉFAUT
