@@ -50,6 +50,7 @@ public class TacheService {
         Tache tache = new Tache();
         tache.setTitre(dto.getTitre());
         tache.setDescription(dto.getDescription());
+        tache.setCoutEstime(dto.getCoutEstime());
         tache.setDureeEstimeeAnnees(dto.getDureeEstimeeAnnees());
         tache.setDureeEstimeeMois(dto.getDureeEstimeeMois());
         tache.setDureeEstimeeJours(dto.getDureeEstimeeJours());
@@ -99,6 +100,7 @@ public class TacheService {
 
         tache.setTitre(dto.getTitre());
         tache.setDescription(dto.getDescription());
+        tache.setCoutEstime(dto.getCoutEstime());
         tache.setDureeEstimeeAnnees(dto.getDureeEstimeeAnnees());
         tache.setDureeEstimeeMois(dto.getDureeEstimeeMois());
         tache.setDureeEstimeeJours(dto.getDureeEstimeeJours());

@@ -30,6 +30,7 @@ public class EquipeService {
                 .orElseThrow(() -> new RuntimeException("Chantier introuvable"));
         Equipe equipe = new Equipe();
         equipe.setNom(dto.getNom());
+        equipe.setDomaine(dto.getDomaine());
         equipe.setChantier(chantier);
         return equipeRepository.save(equipe);
     }
@@ -45,6 +46,9 @@ public class EquipeService {
             equipe.setChantier(chantier);
         }
         equipe.setNom(dto.getNom());
+        if (dto.getDomaine() != null) {
+            equipe.setDomaine(dto.getDomaine());
+        }
         return equipeRepository.save(equipe);
     }
 

@@ -35,6 +35,9 @@ public class Tache {
     private LocalDateTime modification;
 
 
+    @Column(name = "cout_estime")
+    private Double coutEstime;
+
     @Column(name = "duree_estimee_annees")
     private Integer dureeEstimeeAnnees = 0;
 

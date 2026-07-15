@@ -38,6 +38,9 @@ public class UtilisateurService {
         utilisateur.setPrenom(inscription.getPrenom());
         utilisateur.setEmail(inscription.getEmail());
         utilisateur.setPassword(passwordEncoder.encode(inscription.getPassword()));
+        if (inscription.getTelephone() != null) {
+            utilisateur.setTelephone(inscription.getTelephone());
+        }
         utilisateur.setProfil(profilUser);
         return utilisateurRepository.save(utilisateur);
     }

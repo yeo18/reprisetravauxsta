@@ -57,4 +57,10 @@ public class EquipeController {
     public ResponseEntity<Equipe> EquipeUnique(@PathVariable Long id) {
         return ResponseEntity.ok(equipeService.EquipeUnique(id));
     }
+
+    @GetMapping
+    public ResponseEntity<java.util.List<Equipe>> voirListeEquipes() {
+        return ResponseEntity.ok(equipeService.ListeEquipes());
+    }
 }
+

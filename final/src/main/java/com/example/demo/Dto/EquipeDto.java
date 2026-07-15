@@ -7,5 +7,6 @@ import lombok.Data;
 public class EquipeDto {
     @NotBlank
     private String nom;
+    private String domaine;
     private Long chantierId;
 }

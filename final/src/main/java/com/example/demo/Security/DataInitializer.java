@@ -106,6 +106,8 @@ public class DataInitializer implements CommandLineRunner {
             admin.setPrenom("Super");
             admin.setEmail("admin@example.com");
             admin.setPassword(passwordEncoder.encode("admin123"));
+
+            admin.setTelephone("0102030405");
             admin.setProfil(adminProfil);
             admin.setDatecreation(LocalDateTime.now());
             admin.setDateModification(LocalDateTime.now());

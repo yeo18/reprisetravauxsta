@@ -33,8 +33,7 @@ public class Utilisateur {
     private String email;
     @Column(nullable = false)
     private String password;
-    @Column(nullable = false)
-    private  String telephone;
+    private String telephone;
     private LocalDateTime  datecreation;
     @Column(nullable = false)
     private LocalDateTime dateModification;
