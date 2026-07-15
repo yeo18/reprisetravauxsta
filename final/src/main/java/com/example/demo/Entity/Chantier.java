@@ -2,7 +2,6 @@ package com.example.demo.Entity;
 
 import com.example.demo.Entity.Mestypes.StatusTache;
 import com.example.demo.Entity.Mestypes.TypeChantier;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
