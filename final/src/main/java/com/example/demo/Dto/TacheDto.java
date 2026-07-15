@@ -2,7 +2,6 @@ package com.example.demo.Dto;
 
 import com.example.demo.Entity.Mestypes.Priorite;
 import com.example.demo.Entity.Mestypes.StatusTache;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
@@ -37,10 +36,8 @@ public class TacheDto {
     @NotNull(message = "Le statut est obligatoire")
     private StatusTache status;
 
-    @JsonFormat(pattern = "yyyy/MM/dd")
     private LocalDate datedebut;
 
-    @JsonFormat(pattern = "yyyy/MM/dd")
     private LocalDate datefin;
 
     @NotNull(message = "L'ID du chantier est obligatoire")

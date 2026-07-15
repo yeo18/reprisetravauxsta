@@ -25,9 +25,7 @@ public class ChantierDto {
 
     private String photo;
     @NotNull(message = "La date de début est obligatoire")
-    @JsonFormat(pattern = "yyyy/MM/dd")
     private LocalDate datedebut;
 
-    @JsonFormat(pattern = "yyyy/MM/dd")
     private LocalDate datefin;
 }

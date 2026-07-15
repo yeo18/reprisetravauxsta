@@ -32,13 +32,9 @@ public class Chantier {
     private String longitude;
     private String latitude;
     private String photo;
-    @JsonFormat(pattern="yyyy/MM/dd")
     private LocalDate datedebut;
-    @JsonFormat(pattern="yyyy/MM/dd")
     private LocalDate datefin ;
-    @JsonFormat(pattern="yyyy/MM/dd HH:mm:ss")
     private LocalDateTime creation;
-    @JsonFormat(pattern="yyyy/MM/dd HH:mm:ss")
     private LocalDateTime modification;
     @JsonIgnore
     @OneToMany(mappedBy="chantier",cascade=CascadeType.ALL, fetch = FetchType.LAZY)
