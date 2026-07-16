@@ -20,6 +20,20 @@ public class UtilisateurController {
 
     private final UtilisateurService utilisateurService;
 
+    // 0. Créer un utilisateur (admin)
+    @PostMapping
+    @PreAuthorize("@securityEvaluator.hasPermission('UTILISATEUR_CREER')")
+    public ResponseEntity<Utilisateur> creerUtilisateur(
+            @RequestParam @Size(min = 2) String nom,
+            @RequestParam @Size(min = 2) String prenom,
+            @RequestParam String email,
+            @RequestParam @Size(min = 8) String password,
+            @RequestParam(required = false) String telephone,
+            @RequestParam(required = false) Long profilId) {
+        Utilisateur user = utilisateurService.creerUtilisateurParAdmin(nom, prenom, email, password, telephone, profilId);
+        return ResponseEntity.ok(user);
+    }
+
     // 1. Lister tous les utilisateurs
     @GetMapping
     @PreAuthorize("@securityEvaluator.hasPermission('UTILISATEUR_VOIR')")
@@ -36,7 +50,7 @@ public class UtilisateurController {
 
     // 3. Modifier un utilisateur (admin : profil et permissions uniquement, pas d'infos personnelles)
     @PutMapping("/{utilisateurId}")
-    @PreAuthorize("@securityEvaluator.hasPermission('GERER_HABILITATIONS')")
+    @PreAuthorize("@securityEvaluator.hasPermission('UTILISATEUR_MODIFIER')")
     public ResponseEntity<Utilisateur> modifierUtilisateur(
             @PathVariable Long utilisateurId,
             @RequestParam(required = false) Long profilId) {
@@ -46,7 +60,7 @@ public class UtilisateurController {
 
     // 4. Supprimer un utilisateur
     @DeleteMapping("/{utilisateurId}")
-    @PreAuthorize("@securityEvaluator.hasPermission('GERER_HABILITATIONS')")
+    @PreAuthorize("@securityEvaluator.hasPermission('UTILISATEUR_SUPPRIMER')")
     public ResponseEntity<Void> supprimerUtilisateur(@PathVariable Long utilisateurId) {
         utilisateurService.supprimerUtilisateur(utilisateurId);
         return ResponseEntity.noContent().build();

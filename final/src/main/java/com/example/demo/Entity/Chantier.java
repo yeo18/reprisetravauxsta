@@ -1,5 +1,6 @@
 package com.example.demo.Entity;
 
+import com.example.demo.Entity.Mestypes.StatusChantier;
 import com.example.demo.Entity.Mestypes.StatusTache;
 import com.example.demo.Entity.Mestypes.TypeChantier;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -31,6 +32,8 @@ public class Chantier {
     private String longitude;
     private String latitude;
     private String photo;
+    @Enumerated(EnumType.STRING)
+    private StatusChantier status;
     private LocalDate datedebut;
     private LocalDate datefin ;
     private LocalDateTime creation;

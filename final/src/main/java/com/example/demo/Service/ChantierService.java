@@ -3,6 +3,7 @@ package com.example.demo.Service;
 import com.example.demo.Dto.ChantierDto;
 import com.example.demo.Entity.Chantier;
 import com.example.demo.Entity.Mestypes.Priorite;
+import com.example.demo.Entity.Mestypes.StatusChantier;
 import com.example.demo.Entity.Mestypes.StatusTache;
 import com.example.demo.Entity.Tache;
 import com.example.demo.Entity.Utilisateur;
@@ -44,6 +45,7 @@ public class ChantierService {
         chantier.setLatitude(dto.getLatitude());
         chantier.setDatedebut(dto.getDatedebut());
         chantier.setDatefin(dto.getDatefin());
+        chantier.setStatus(dto.getStatus() != null ? dto.getStatus() : StatusChantier.EN_COURS);
         chantier.setCreateur(Verification());
         return chantierRepository.save(chantier);
 
@@ -64,6 +66,7 @@ public class ChantierService {
         chantier.setLocalisation(dto.getLocalisation());
         chantier.setLatitude(dto.getLatitude());
         chantier.setLongitude(dto.getLongitude());
+        if (dto.getStatus() != null) chantier.setStatus(dto.getStatus());
 
         return chantierRepository.save(chantier);
     }
@@ -108,6 +111,15 @@ public class ChantierService {
     public Chantier SelectionnerUnChantier(Long id) {
         return chantierRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Chantier introuvable avec l'ID : " + id));
+    }
+
+    @PreAuthorize("@securityEvaluator.hasPermission('CHANTIER_MODIFIER')")
+    @Transactional
+    public Chantier changerStatus(Long id, StatusChantier nouveauStatus) {
+        Chantier chantier = chantierRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Chantier introuvable"));
+        chantier.setStatus(nouveauStatus);
+        return chantierRepository.save(chantier);
     }
 
     // 10. MON CHANTIER (pour le profil USER)

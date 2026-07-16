@@ -43,6 +43,24 @@ public class UtilisateurService {
         return utilisateurRepository.save(utilisateur);
     }
 
+    @Transactional
+    public Utilisateur creerUtilisateurParAdmin(String nom, String prenom, String email, String password, String telephone, Long profilId) {
+        if (utilisateurRepository.findByEmail(email).isPresent()) {
+            throw new RuntimeException("Cet email est déjà utilisé");
+        }
+        Profil profil = profilId != null
+                ? profilRepository.findById(profilId).orElseThrow(() -> new RuntimeException("Profil non trouvé"))
+                : profilRepository.findByNom("USER").orElseThrow(() -> new RuntimeException("Profil USER manquant"));
+        Utilisateur utilisateur = new Utilisateur();
+        utilisateur.setNom(nom);
+        utilisateur.setPrenom(prenom);
+        utilisateur.setEmail(email);
+        utilisateur.setPassword(passwordEncoder.encode(password));
+        utilisateur.setTelephone(telephone != null ? telephone : "");
+        utilisateur.setProfil(profil);
+        return utilisateurRepository.save(utilisateur);
+    }
+
     public Utilisateur trouverParEmail(String email) {
         return utilisateurRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
     }

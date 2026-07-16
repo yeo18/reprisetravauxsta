@@ -1,5 +1,6 @@
 package com.example.demo.Dto;
 
+import com.example.demo.Entity.Mestypes.StatusChantier;
 import com.example.demo.Entity.Mestypes.TypeChantier;
 import com.example.demo.util.HtmlSanitizer;
 import jakarta.validation.constraints.*;
@@ -28,6 +29,8 @@ public class ChantierDto {
     private String latitude;
 
     private String photo;
+
+    private StatusChantier status;
 
     @NotNull(message = "La date de début est obligatoire")
     @FutureOrPresent(message = "La date de début ne peut pas être dans le passé")

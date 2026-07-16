@@ -68,7 +68,7 @@ public class TacheController {
         return ResponseEntity.ok(tacheService.TacheParChantier(chantierId));
     }
 
-    @PostMapping("/{tacheId}/aasigner-equipe/{equipeId}")
+    @PostMapping("/{tacheId}/assigner-equipe/{equipeId}")
     @PreAuthorize("@securityEvaluator.hasPermission('TACHE_ASSIGNER_EQUIPE')")
     @Operation(summary = "Assigner une tâche à une équipe", description = "Associe une tâche à une équipe")
     public ResponseEntity<?> assignerTacheEquipe(@PathVariable Long tacheId, @PathVariable Long equipeId) {

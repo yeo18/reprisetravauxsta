@@ -2,6 +2,7 @@ package com.example.demo.Controller;
 
 import com.example.demo.Dto.ChantierDto;
 import com.example.demo.Entity.Chantier;
+import com.example.demo.Entity.Mestypes.StatusChantier;
 import com.example.demo.Entity.Tache;
 import com.example.demo.Service.ChantierService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -76,6 +77,14 @@ public class ChantierController {
     @Operation(summary = "Tâches urgentes d'un chantier", description = "Liste les tâches urgentes d'un chantier")
     public ResponseEntity<List<Tache>> TachesUrgentesParChantier(@PathVariable Long id) {
         return ResponseEntity.ok(chantierService.TachesUrgentesParChantier(id));
+    }
+
+    @PutMapping("/{id}/status")
+    @PreAuthorize("@securityEvaluator.hasPermission('CHANTIER_MODIFIER')")
+    @Operation(summary = "Changer le statut", description = "Modifie le statut d'un chantier")
+    public ResponseEntity<?> changerStatus(@PathVariable Long id, @RequestParam StatusChantier status) {
+        Chantier chantier = chantierService.changerStatus(id, status);
+        return ResponseEntity.ok(Map.of("message", "Statut modifié avec succès", "data", chantier));
     }
 
     @GetMapping("/mon-chantier")
