@@ -6,10 +6,12 @@ import com.example.demo.Entity.Utilisateur;
 import com.example.demo.Service.AdminAcessService;
 import com.example.demo.Service.PermissionService;
 import com.example.demo.Service.ProfilService;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
+@Validated
 @PreAuthorize("isAuthenticated()")
 public class AdminController {
 
@@ -33,14 +36,14 @@ public class AdminController {
 
     @PostMapping("/profils")
     @PreAuthorize("@securityEvaluator.hasPermission('GERER_HABILITATIONS')")
-    public ResponseEntity<Profil> creerProfil(@RequestParam String nom) {
-        Profil profil = profilService.creerProfil(nom, null);
+    public ResponseEntity<Profil> creerProfil(@RequestParam @Size(min = 2, max = 50) String nom) {
+        Profil profil = profilService.creerProfil(com.example.demo.util.HtmlSanitizer.sanitize(nom), null);
         return ResponseEntity.status(HttpStatus.CREATED).body(profil);
     }
 
     @PutMapping("/profils/{profilId}")
     @PreAuthorize("@securityEvaluator.hasPermission('GERER_HABILITATIONS')")
-    public ResponseEntity<Profil> modifierProfil(@PathVariable Long profilId, @RequestParam String nouveauNom) {
+    public ResponseEntity<Profil> modifierProfil(@PathVariable Long profilId, @RequestParam @Size(min = 2, max = 50) String nouveauNom) {
         Profil profil = profilService.modifierProfil(profilId, nouveauNom);
         return ResponseEntity.ok(profil);
     }

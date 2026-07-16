@@ -2,9 +2,11 @@ package com.example.demo.Controller;
 
 import com.example.demo.Entity.Utilisateur;
 import com.example.demo.Service.UtilisateurService;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/admin/utilisateurs")
 @RequiredArgsConstructor
+@Validated
 @PreAuthorize("isAuthenticated()")
 public class UtilisateurController {
 
@@ -54,7 +57,7 @@ public class UtilisateurController {
     @PreAuthorize("@securityEvaluator.hasPermission('GERER_HABILITATIONS')")
     public ResponseEntity<Void> resetPassword(
             @PathVariable Long utilisateurId,
-            @RequestParam String newPassword) {
+            @RequestParam @Size(min = 8) String newPassword) {
         utilisateurService.resetPassword(utilisateurId, newPassword);
         return ResponseEntity.ok().build();
     }
