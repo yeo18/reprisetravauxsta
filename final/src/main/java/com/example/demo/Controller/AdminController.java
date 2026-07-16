@@ -7,6 +7,8 @@ import com.example.demo.Service.AdminAcessService;
 import com.example.demo.Service.PermissionService;
 import com.example.demo.Service.ProfilService;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.Valid;
+import com.example.demo.Dto.PermissionCreateDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -62,25 +64,25 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/profils/{profilId}/permissions/{permissionId}")
+    @PutMapping("/profils/{profilId}/permissions")
     @PreAuthorize("@securityEvaluator.hasPermission('GERER_HABILITATIONS')")
-    public ResponseEntity<Void> retirerPermissionAuProfil(@PathVariable Long profilId, @PathVariable Long permissionId) {
-        profilService.retirerPermissionDuProfil(profilId, permissionId);
+    public ResponseEntity<Void> remplacerPermissionsDuProfil(@PathVariable Long profilId, @RequestBody Set<Long> permissionIds) {
+        profilService.remplacerPermissionsDuProfil(profilId, permissionIds);
         return ResponseEntity.ok().build();
     }
 
-    // ========== PERMISSIONS GLOBALES ==========
-    @GetMapping("/permissions")
-    @PreAuthorize("@securityEvaluator.hasPermission('GERER_HABILITATIONS')")
-    public ResponseEntity<List<Permission>> listerPermissions() {
-        return ResponseEntity.ok(permissionService.listerToutes());
+    @PostMapping("/permissions")
+    @PreAuthorize("@securityEvaluator.hasPermission('PERMISSION_CREER')")
+    public ResponseEntity<Permission> creerPermission(@Valid @RequestBody PermissionCreateDto dto) {
+        Permission permission = permissionService.creerPermission(dto.getNom(), dto.getDescription());
+        return ResponseEntity.status(HttpStatus.CREATED).body(permission);
     }
 
-    @PutMapping("/permission/{permissionId}")
-    @PreAuthorize("@securityEvaluator.hasPermission('GERER_HABILITATIONS')")
-    public ResponseEntity<Permission> modifierPermission(@PathVariable Long permissionId, @RequestParam String nouveaunom) {
-        Permission permission = permissionService.modifierPermission(permissionId, nouveaunom);
-        return ResponseEntity.ok(permission);
+    @DeleteMapping("/permissions/{permissionId}")
+    @PreAuthorize("@securityEvaluator.hasPermission('PERMISSION_SUPPRIMER')")
+    public ResponseEntity<Void> supprimerPermission(@PathVariable Long permissionId) {
+        permissionService.supprimerPermission(permissionId);
+        return ResponseEntity.noContent().build();
     }
 
     // ========== PERMISSIONS SPÉCIFIQUES AUX UTILISATEURS ==========

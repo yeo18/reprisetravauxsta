@@ -38,7 +38,7 @@ public class PermissionService {
     // ========== ÉCRITURE ==========
 
     @Transactional
-    public Permission creerPermission(String nom) {
+    public Permission creerPermission(String nom, String description) {
         if (nom == null || nom.trim().isEmpty()) {
             throw new RuntimeException("Le nom de la permission ne peut pas être vide");
         }
@@ -47,6 +47,7 @@ public class PermissionService {
         }
         Permission permission = new Permission();
         permission.setNom(nom.trim());
+        permission.setDescription(description);
         return permissionRepository.save(permission);
     }
 
