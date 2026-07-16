@@ -47,6 +47,13 @@ public class Chantier {
      @JsonIgnore
     @OneToMany(mappedBy = "chantier", cascade = CascadeType.ALL)
     private Set<Equipe> equipes = new HashSet<>();
+    @ManyToMany
+    @JoinTable(
+        name = "chantier_utilisateur",
+        joinColumns = @JoinColumn(name = "chantier_id"),
+        inverseJoinColumns = @JoinColumn(name = "utilisateur_id")
+    )
+    private Set<Utilisateur> utilisateursAssiges = new HashSet<>();
     @PrePersist
     protected void onCreate() {
         creation = LocalDateTime.now();

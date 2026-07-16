@@ -92,11 +92,24 @@ public class ChantierService {
             return chantierRepository.findAll();
         }
 
-        // Non-admin: ne voir que le chantier de son équipe
+        // Non-admin: chantiers assigns directement OU chantier de son equipe
+        List<Chantier> chantierEquipe = List.of();
         if (user.getEquipe() != null && user.getEquipe().getChantier() != null) {
-            return List.of(user.getEquipe().getChantier());
+            chantierEquipe = List.of(user.getEquipe().getChantier());
         }
-        return List.of();
+
+        List<Chantier> chantierAssignes = chantierRepository.findChantiersByUtilisateurId(user.getId());
+
+        // Fusionner sans doublons
+        java.util.Set<Long> seenIds = new java.util.HashSet<>();
+        java.util.List<Chantier> result = new java.util.ArrayList<>();
+        for (Chantier c : chantierEquipe) {
+            if (seenIds.add(c.getId())) result.add(c);
+        }
+        for (Chantier c : chantierAssignes) {
+            if (seenIds.add(c.getId())) result.add(c);
+        }
+        return result;
     }
     @PreAuthorize("@securityEvaluator.hasPermission('CHANTIER_VOIR_STATS')")
     public Map<String,Object> voirStats(Long id){
@@ -144,5 +157,37 @@ public class ChantierService {
             throw new RuntimeException("Vous n'êtes assigné à aucun chantier");
         }
         return user.getEquipe().getChantier();
+    }
+
+    // 11. ASSIGNER UN UTILISATEUR A UN CHANTIER
+    @PreAuthorize("@securityEvaluator.hasPermission('CHANTIER_MODIFIER')")
+    @Transactional
+    public void assignerUtilisateur(Long chantierId, Long utilisateurId) {
+        Chantier chantier = chantierRepository.findById(chantierId)
+                .orElseThrow(() -> new RuntimeException("Chantier introuvable"));
+        Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId)
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+        chantier.getUtilisateursAssiges().add(utilisateur);
+        chantierRepository.save(chantier);
+    }
+
+    // 12. RETIRER UN UTILISATEUR D UN CHANTIER
+    @PreAuthorize("@securityEvaluator.hasPermission('CHANTIER_MODIFIER')")
+    @Transactional
+    public void retirerUtilisateur(Long chantierId, Long utilisateurId) {
+        Chantier chantier = chantierRepository.findById(chantierId)
+                .orElseThrow(() -> new RuntimeException("Chantier introuvable"));
+        Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId)
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+        chantier.getUtilisateursAssiges().remove(utilisateur);
+        chantierRepository.save(chantier);
+    }
+
+    // 13. LISTER LES UTILISATEURS D UN CHANTIER
+    @PreAuthorize("@securityEvaluator.hasPermission('CHANTIER_VOIR')")
+    public List<Utilisateur> listerUtilisateursChantier(Long chantierId) {
+        Chantier chantier = chantierRepository.findById(chantierId)
+                .orElseThrow(() -> new RuntimeException("Chantier introuvable"));
+        return new java.util.ArrayList<>(chantier.getUtilisateursAssiges());
     }
 }

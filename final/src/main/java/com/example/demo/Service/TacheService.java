@@ -9,6 +9,7 @@ import com.example.demo.Repository.ChantierRepository;
 import com.example.demo.Repository.EquipeRepository;
 import com.example.demo.Repository.TacheRepository;
 import com.example.demo.Repository.UtilisateurRepository;
+import com.example.demo.Security.SecurityEvaluator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -123,17 +124,48 @@ public class TacheService {
         tacheRepository.deleteById(id);
     }
 
-    // 4. LISTER TOUTES
+    // 4. LISTER TOUTES (filtré par role/utilisateur)
     @PreAuthorize("@securityEvaluator.hasPermission('TACHE_VOIR')")
     public List<Tache> getAllTaches() {
-        return tacheRepository.findAll();
+        Utilisateur user = getCurrentUser();
+        boolean isAdmin = user.getProfil() != null && "ADMIN".equalsIgnoreCase(user.getProfil().getNom());
+        if (isAdmin) {
+            return tacheRepository.findAll();
+        }
+
+        // Verifier si l'utilisateur a la permission TACHE_VALIDER
+        boolean hasValider = hasPermission(user, "TACHE_VALIDER");
+        if (hasValider) {
+            // Voir toutes les tâches des chantiers assigns
+            List<Long> chantierIds = chantierRepository.findChantiersByUtilisateurId(user.getId()).stream()
+                    .map(Chantier::getId).toList();
+            if (chantierIds.isEmpty()) {
+                return List.of();
+            }
+            return tacheRepository.findByChantierIdIn(chantierIds);
+        }
+
+        // Utilisateur normal: ses tâches + tâches de son équipe
+        return mesTaches();
     }
 
-    // 5. MES TACHES (pour un utilisateur USER — filtré par assignation + équipe)
+    // 5. MES TACHES (pour un utilisateur USER — filtré par assignation + équipe + chantiers assigns)
     public List<Tache> mesTaches() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Utilisateur user = utilisateurRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+        // Si l'utilisateur a TACHE_VALIDER, il voit toutes les tâches de ses chantiers assigns
+        boolean hasValider = hasPermission(user, "TACHE_VALIDER");
+        if (hasValider) {
+            List<Long> chantierIds = chantierRepository.findChantiersByUtilisateurId(user.getId()).stream()
+                    .map(Chantier::getId).toList();
+            if (!chantierIds.isEmpty()) {
+                return tacheRepository.findByChantierIdIn(chantierIds);
+            }
+        }
+
+        // Sinon: tâches assignées directement + tâches de son équipe
         Equipe userEquipe = user.getEquipe();
         if (userEquipe != null) {
             return tacheRepository.findByAssigneAIdOrEquipesIdIn(
@@ -151,9 +183,21 @@ public class TacheService {
                 .orElseThrow(() -> new RuntimeException("Tâche introuvable"));
     }
 
-    // 6. LISTER PAR CHANTIER
+    // 6. LISTER PAR CHANTIER (avec verification d'acces)
     @PreAuthorize("@securityEvaluator.hasPermission('TACHE_VOIR')")
     public List<Tache> TacheParChantier(Long chantierId) {
+        Utilisateur user = getCurrentUser();
+        boolean isAdmin = user.getProfil() != null && "ADMIN".equalsIgnoreCase(user.getProfil().getNom());
+        if (!isAdmin) {
+            // Verifier que l'utilisateur a acces a ce chantier
+            boolean isAssigned = chantierRepository.isUtilisateurAssignedToChantier(chantierId, user.getId());
+            boolean isTeamChantier = user.getEquipe() != null
+                    && user.getEquipe().getChantier() != null
+                    && user.getEquipe().getChantier().getId().equals(chantierId);
+            if (!isAssigned && !isTeamChantier) {
+                throw new RuntimeException("Vous n'avez pas acces a ce chantier");
+            }
+        }
         return tacheRepository.findByChantierId(chantierId);
     }
 
@@ -162,6 +206,21 @@ public class TacheService {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Utilisateur user = utilisateurRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+        // Si l'utilisateur a TACHE_VALIDER, il voit toutes les tâches de ce chantier
+        boolean hasValider = hasPermission(user, "TACHE_VALIDER");
+        if (hasValider) {
+            boolean isAssigned = chantierRepository.isUtilisateurAssignedToChantier(chantierId, user.getId());
+            boolean isTeamChantier = user.getEquipe() != null
+                    && user.getEquipe().getChantier() != null
+                    && user.getEquipe().getChantier().getId().equals(chantierId);
+            if (isAssigned || isTeamChantier) {
+                return tacheRepository.findByChantierId(chantierId);
+            }
+            return List.of();
+        }
+
+        // Sinon: tâches assignées directement + tâches de son équipe pour ce chantier
         Equipe userEquipe = user.getEquipe();
         if (userEquipe != null) {
             return tacheRepository.findByChantierIdAndAssigneAIdOrEquipesIdIn(
@@ -171,6 +230,21 @@ public class TacheService {
         return tacheRepository.findByChantierId(chantierId).stream()
                 .filter(t -> t.getAssigneA() != null && t.getAssigneA().getId().equals(user.getId()))
                 .toList();
+    }
+
+    private boolean hasPermission(Utilisateur user, String permission) {
+        // Admin a tous les droits
+        if (user.getProfil() != null && "ADMIN".equalsIgnoreCase(user.getProfil().getNom())) {
+            return true;
+        }
+        // Verifier dans les permissions du profil
+        boolean viaProfil = user.getProfil() != null &&
+                user.getProfil().getPermissions().stream()
+                        .anyMatch(p -> p.getNom().equalsIgnoreCase(permission));
+        // Verifier dans les permissions specifiques
+        boolean viaSpecifique = user.getPermissionsSpecifiques().stream()
+                .anyMatch(p -> p.getNom().equalsIgnoreCase(permission));
+        return viaProfil || viaSpecifique;
     }
 
     // ========== STATS ==========

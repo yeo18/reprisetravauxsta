@@ -60,6 +60,9 @@ public class Utilisateur {
     @JoinColumn(name = "equipe_id")
     @JsonIgnoreProperties({"membres", "taches", "chantier", "creation", "modification"})
     private Equipe equipe;
+    @ManyToMany(mappedBy = "utilisateursAssiges", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Set<Chantier> chantiersAssiges = new HashSet<>();
     @PrePersist
     protected void onCreate() {
         this.datecreation = LocalDateTime.now();

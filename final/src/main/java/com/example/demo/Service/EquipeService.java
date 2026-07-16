@@ -69,10 +69,32 @@ public class EquipeService {
         equipeRepository.deleteById(id);
     }
 
-    // 4. LISTER TOUTES
+    // 4. LISTER TOUTES (filtré par chantiers de l'utilisateur)
     @PreAuthorize("@securityEvaluator.hasPermission('EQUIPE_VOIR')")
     public List<Equipe> listerToutes() {
-        return equipeRepository.findAll();
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Utilisateur user = utilisateurRepository.findByEmail(email).orElse(null);
+        if (user == null) return List.of();
+
+        boolean isAdmin = user.getProfil() != null && "ADMIN".equalsIgnoreCase(user.getProfil().getNom());
+        if (isAdmin) {
+            return equipeRepository.findAll();
+        }
+
+        // Non-admin: equipes des chantiers assigns + equipe de son chantier
+        java.util.Set<Long> chantierIds = new java.util.HashSet<>();
+        List<Chantier> chantierAssignes = chantierRepository.findChantiersByUtilisateurId(user.getId());
+        for (Chantier c : chantierAssignes) {
+            chantierIds.add(c.getId());
+        }
+        if (user.getEquipe() != null && user.getEquipe().getChantier() != null) {
+            chantierIds.add(user.getEquipe().getChantier().getId());
+        }
+
+        if (chantierIds.isEmpty()) {
+            return List.of();
+        }
+        return equipeRepository.findByChantierIdIn(new java.util.ArrayList<>(chantierIds));
     }
 
     // 5. VOIR UNE

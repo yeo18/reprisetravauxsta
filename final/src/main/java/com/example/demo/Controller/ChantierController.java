@@ -92,4 +92,27 @@ public class ChantierController {
     public ResponseEntity<Chantier> monChantier() {
         return ResponseEntity.ok(chantierService.monChantier());
     }
+
+    @PostMapping("/{chantierId}/utilisateurs/{utilisateurId}")
+    @PreAuthorize("@securityEvaluator.hasPermission('CHANTIER_MODIFIER')")
+    @Operation(summary = "Assigner un utilisateur au chantier", description = "Ajoute un utilisateur au chantier")
+    public ResponseEntity<?> assignerUtilisateur(@PathVariable Long chantierId, @PathVariable Long utilisateurId) {
+        chantierService.assignerUtilisateur(chantierId, utilisateurId);
+        return ResponseEntity.ok(Map.of("message", "Utilisateur assigné au chantier avec succès"));
+    }
+
+    @DeleteMapping("/{chantierId}/utilisateurs/{utilisateurId}")
+    @PreAuthorize("@securityEvaluator.hasPermission('CHANTIER_MODIFIER')")
+    @Operation(summary = "Retirer un utilisateur du chantier", description = "Retire un utilisateur du chantier")
+    public ResponseEntity<?> retirerUtilisateur(@PathVariable Long chantierId, @PathVariable Long utilisateurId) {
+        chantierService.retirerUtilisateur(chantierId, utilisateurId);
+        return ResponseEntity.ok(Map.of("message", "Utilisateur retiré du chantier avec succès"));
+    }
+
+    @GetMapping("/{chantierId}/utilisateurs")
+    @PreAuthorize("@securityEvaluator.hasPermission('CHANTIER_VOIR')")
+    @Operation(summary = "Utilisateurs assignés au chantier", description = "Liste les utilisateurs assignés à un chantier")
+    public ResponseEntity<?> listerUtilisateursChantier(@PathVariable Long chantierId) {
+        return ResponseEntity.ok(chantierService.listerUtilisateursChantier(chantierId));
+    }
 }

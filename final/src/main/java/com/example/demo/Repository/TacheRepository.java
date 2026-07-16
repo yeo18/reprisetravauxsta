@@ -28,6 +28,8 @@ public interface TacheRepository extends JpaRepository<Tache, Long> {
 
     List<Tache> findByChantierId(Long chantierId);
 
+    List<Tache> findByChantierIdIn(List<Long> chantierIds);
+
     List<Tache> findByAssigneAId(Long utilisateurId);
 
     List<Tache> findByEquipes_Id(Long equipeId);
