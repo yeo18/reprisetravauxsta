@@ -65,6 +65,13 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping("/permission/{permissionId}")
+    @PreAuthorize("@securityEvaluator.hasPermission('GERER_HABILITATIONS')")
+    public ResponseEntity<Permission> modifierPermission(@PathVariable Long permissionId, @RequestParam String nouveaunom) {
+        Permission permission = permissionService.modifierPermission(permissionId, nouveaunom);
+        return ResponseEntity.ok(permission);
+    }
+
     @PutMapping("/profils/{profilId}/permissions")
     @PreAuthorize("@securityEvaluator.hasPermission('GERER_HABILITATIONS')")
     public ResponseEntity<Void> remplacerPermissionsDuProfil(@PathVariable Long profilId, @RequestBody List<Long> permissionIds) {
@@ -84,6 +91,12 @@ public class AdminController {
     public ResponseEntity<Void> supprimerPermission(@PathVariable Long permissionId) {
         permissionService.supprimerPermission(permissionId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/permissions")
+    @PreAuthorize("@securityEvaluator.hasPermission('GERER_HABILITATIONS')")
+    public ResponseEntity<List<Permission>> listerPermissions() {
+        return ResponseEntity.ok(permissionService.listerToutes());
     }
 
     // ========== PERMISSIONS SPÉCIFIQUES AUX UTILISATEURS ==========
