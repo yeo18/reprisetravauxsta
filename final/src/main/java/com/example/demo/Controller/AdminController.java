@@ -108,11 +108,6 @@ public class AdminController {
         return ResponseEntity.ok(perms);
     }
 
-    @GetMapping("/permissions-test")
-    public ResponseEntity<String> permissionsTest() {
-        return ResponseEntity.ok("permissions-test OK");
-    }
-
     // ========== PERMISSIONS SPÉCIFIQUES AUX UTILISATEURS ==========
     @PostMapping("/utilisateurs/{utilisateurId}/permissions/{permissionId}")
     @PreAuthorize("@securityEvaluator.hasPermission('GERER_HABILITATIONS')")
