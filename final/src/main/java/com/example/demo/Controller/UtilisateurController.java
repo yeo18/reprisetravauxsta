@@ -48,13 +48,17 @@ public class UtilisateurController {
         return ResponseEntity.ok(utilisateurService.trouverParId(id));
     }
 
-    // 3. Modifier un utilisateur (admin : profil et permissions uniquement, pas d'infos personnelles)
+    // 3. Modifier un utilisateur (admin)
     @PutMapping("/{utilisateurId}")
     @PreAuthorize("@securityEvaluator.hasPermission('UTILISATEUR_MODIFIER')")
     public ResponseEntity<Utilisateur> modifierUtilisateur(
             @PathVariable Long utilisateurId,
+            @RequestParam(required = false) @Size(min = 2) String nom,
+            @RequestParam(required = false) @Size(min = 2) String prenom,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String telephone,
             @RequestParam(required = false) Long profilId) {
-        Utilisateur user = utilisateurService.modifierUtilisateur(utilisateurId, null, null, null, null, profilId);
+        Utilisateur user = utilisateurService.modifierUtilisateur(utilisateurId, nom, prenom, email, telephone, profilId);
         return ResponseEntity.ok(user);
     }
 

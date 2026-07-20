@@ -65,6 +65,13 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/profils/{profilId}/permissions/{permissionId}")
+    @PreAuthorize("@securityEvaluator.hasPermission('GERER_HABILITATIONS')")
+    public ResponseEntity<Void> retirerPermissionDuProfil(@PathVariable Long profilId, @PathVariable Long permissionId) {
+        profilService.retirerPermissionDuProfil(profilId, permissionId);
+        return ResponseEntity.noContent().build();
+    }
+
     @PutMapping("/permission/{permissionId}")
     @PreAuthorize("@securityEvaluator.hasPermission('GERER_HABILITATIONS')")
     public ResponseEntity<Permission> modifierPermission(@PathVariable Long permissionId, @RequestParam String nouveaunom) {
